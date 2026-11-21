@@ -99,7 +99,7 @@ lg.addTo(map);
       + 'Map ID <b>' + e(a[ix.id]) + '</b> (' + e(a[ix.town] ? a[ix.town] + ', ' : '') + e(a[ix.county]) + ' County)<br>'
       + 'Modeled water at the building now: <b>' + (now ? a[ix.now].toFixed(1) + ' ft (' + CL[a[ix.bn]] + ')' : 'under 1 ft') + '</b><br>'
       + (a[ix.hasf] ? 'At the NWS forecast crest: <b>' + a[ix.crest].toFixed(1) + ' ft (' + CL[a[ix.bc]] + ')</b>' : 'No NWS crest forecast here (held at today\'s level)')
-      + (a[ix.pdf] ? '<br><a href="../maps/' + e(a[ix.pdf]) + '" target="_blank" rel="noopener">House-level detail sheet (PDF)</a>' : '')
+      + (a[ix.pdf] ? '<br><a href="maps-' + e(a[ix.pdf]) + '" target="_blank" rel="noopener">House-level detail sheet (PDF)</a>' : '')
       + '<br><small>Modeled estimate, not an inspection. Depth is at the ground, not inside.</small></div>';
     p.bindPopup(html); aff.addLayer(p); R.push({a: a, p: p});
   });
@@ -124,7 +124,7 @@ lg.addTo(map);
     return null; };
   window.FL_BLD_NEAR = function(lat, lon, m){ var out = []; R.forEach(function(r){ var a = r.a, dy = (a[ix.lat] - lat) * 111320, dx = (a[ix.lon] - lon) * 111320 * Math.cos(lat * Math.PI / 180); var d = Math.sqrt(dx * dx + dy * dy); if (d <= m) out.push({r: r, d: d}); }); return out.sort(function(x, y){ return x.d - y.d; }); };
   window.FL_BLD_OPEN = function(r){ map.setView([r.a[ix.lat], r.a[ix.lon]], 18); setTimeout(function(){ r.p.openPopup(); }, 300); };
-  window.FL_BLD_IX = ix; window.FL_BLD_CL = CL;
+  window.FL_BLD_IX = ix; window.FL_BLD_CL = CL; window.FL_BLD_L = {other: other, aff: aff, R: R};
 })();
 </script>
 <!-- FL-BUILDINGS end -->
