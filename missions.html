@@ -1,0 +1,240 @@
+<!doctype html><html lang="en"><head><link rel="icon" href="swrf-logo.png"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Volunteer Missions: SWRF Floodline Recon FL | Stormy Weather Response Force</title>
+<meta name="description" content="Volunteer missions in about 1/4 square mile sections for SWRF Floodline Recon FL. Team leads assign a mission; each one has a map, numbered houses and a one-page PDF.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>:root{--navy:#0b2545;--blue:#13315c;--accent:#e4002b;--ink:#1d2433;--muted:#5a6475;--bg:#f5f7fa;--line:#dfe4ec;--high:#e4002b;--med:#c57600;--low:#13315c}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.45}
+a{color:var(--blue)} header{background:var(--navy);color:#fff} header .wrap{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;padding:12px 18px} header img{width:52px;height:52px}
+header b{display:block;font-size:17px} header small{display:block;font-size:13px;opacity:.85} header a{color:#fff;text-decoration:none} header .sp{flex:1}
+nav.top{display:flex;gap:16px;flex-wrap:wrap} nav.top a{color:#fff;font-weight:700;font-size:15px;text-decoration:none} .bar{height:5px;background:var(--accent)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+h1{color:var(--navy);font-size:clamp(26px,5vw,36px);margin:22px 0 6px} h2{color:var(--navy);font-size:24px;margin:30px 0 10px} h3{color:var(--navy);margin:0 0 6px;font-size:20px}
+.asof{color:var(--muted);font-size:15px;margin:0 0 16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:12px 0}
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:16px 0}
+.big .card{margin:0;text-align:center} .num{font-size:32px;font-weight:800;color:var(--accent);line-height:1.1} .num.navy{color:var(--navy)} .lbl{font-size:15px;color:var(--muted)}
+.note{background:#fff8e6;border:1px solid #f2d38a;border-radius:10px;padding:12px 16px;margin:12px 0}
+.safety{background:#fdeeee;border:1px solid #f5b5b5;border-radius:10px;padding:12px 16px;margin:12px 0}
+.btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;padding:13px 20px;border-radius:10px;margin:4px 8px 4px 0} .btn.alt{background:#fff;color:var(--navy);border:1px solid var(--navy)} .btn.navy{background:var(--navy);color:#fff}
+table{width:100%;border-collapse:collapse;background:#fff;font-size:15px} th,td{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top} th{background:var(--navy);color:#fff;cursor:pointer;white-space:nowrap} th:hover{background:var(--blue)}
+td.r,th.r{text-align:right} .tw{overflow-x:auto;border-radius:10px;border:1px solid var(--line)}
+.tag{display:inline-block;font-weight:700;font-size:12px;padding:2px 8px;border-radius:999px;color:#fff} .tag.High{background:var(--high)} .tag.Medium{background:var(--med)} .tag.Low{background:var(--low)} .tag.Open{background:#1b7a3d} .tag.Assigned{background:var(--med)} .tag.Done{background:#5a6475}
+#map{height:560px;width:100%;border:1px solid var(--line);border-radius:10px;margin:12px 0}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
+.filters label{font-weight:700;color:var(--navy);font-size:14px} .filters select,.filters input{font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:8px}
+.filters input{min-width:180px;flex:1}
+footer{background:var(--navy);color:#fff;text-align:center;padding:26px 18px;margin-top:34px} footer a{color:#fff;font-weight:700} footer img{width:56px;height:56px}
+@media (max-width:640px){body{font-size:17px} header img{width:40px;height:40px} header small{display:none} nav.top{width:100%;gap:14px} nav.top a{font-size:14px} #map{height:300px} th,td{padding:6px;font-size:14px} .btn{padding:12px 16px} .filters{flex-direction:column;align-items:stretch}}
+@media print{header,.filters,footer,.noprint{display:none !important} #map{height:420px;border:none} body{background:#fff} a{color:#000}}
+
+.lg{background:#fff;padding:10px 12px;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,.3);font-size:13px;line-height:1.5;max-width:260px}
+.lg h4{margin:0 0 4px;color:var(--navy)} .sw{display:inline-block;width:14px;height:14px;vertical-align:middle;margin-right:6px;border:1px solid #555}
+.ol-High{color:#e4002b} .explainer ol{margin:8px 0 0 20px;padding:0} .explainer li{margin:0 0 6px}
+tr.mission{cursor:pointer} tr.mission:hover{background:#eef2f8}
+.leaflet-tooltip.mid-lab{background:rgba(11,37,69,.88);color:#fff;border:none;font-weight:700;font-size:11px;padding:1px 5px;border-radius:3px;box-shadow:none}
+@media (max-width:700px){.leaflet-bottom.leaflet-left .lg{margin-bottom:34px} .lg .body{display:none} .lg.open .body{display:block} .lg h4{cursor:pointer}}
+</style></head><body>
+<header><div class="wrap"><img src="swrf-logo.png" alt="SWRF logo"><div><b><a href="https://www.stormywx.org">Stormy Weather Response Force</a></b><small>www.stormywx.org</small></div><span class="sp"></span>
+<nav class="top"><a href="index.html">Overview</a><a href="map.html">Map</a><a href="methods.html">How we estimate</a><a href="lookup.html">Flood lookup</a><a href="https://docs.google.com/forms/d/e/1FAIpQLSdVIxn33px7t8Fp4t0svz_zWzYZ0HEG0m91Hhu8nQNfkBRWgw/viewform" target="_blank" rel="noopener">Request help</a><a href="missions.html">Volunteer Missions</a></nav></div></header><div class="bar"></div>
+
+<main class="wrap">
+<h1>Volunteer Missions</h1>
+<p class="asof">As of Sat Nov 21, 2:00 PM ET (Update 11/21 2 PM). Built Sat Nov 21, 2026, 3:01 PM ET. Conservative modeled estimate: buildings with 1 ft or more of water at the NWS forecast crest. Modeled estimates, not inspections.</p>
+
+<div class="card explainer">
+<h3>How a mission works</h3>
+<p>Each mission is a section of about one-quarter square mile (a 1/2 mile by 1/2 mile square) with the affected buildings our model shows at the forecast crest. One team can usually finish one mission in a few hours. Tiny neighboring cells are combined; a cell with more than about 60 buildings is split so the work stays a reasonable size.</p>
+<ol>
+<li>Look at the map and the list. Filter by county, priority or status, or search for a town, street or mission ID.</li>
+<li>Open a mission to see the numbered houses, addresses, depths and the start point.</li>
+<li>Your team lead assigns the mission (status changes from Open to Assigned, then to Done when you finish). Please do not start a mission until your team lead has assigned it to you.</li>
+<li>Download or print the one-page mission PDF. It has the map, the address list and a checklist with space for notes.</li>
+<li>Check in with your team lead before you go, and check out when you are done. If anyone is in danger, call 911.</li>
+<li>Send one field report per house you check, with the water depth, damage, a severity from 1 to 5 and photos. On the mission page, tap the house's address (in the list or on the map) to open its report form with the mission, Map ID and address already filled in. Photo upload needs a Google sign-in.</li>
+</ol>
+<p>Do not enter floodwater. Eighteen inches or more of water means no vehicle access. These pages do not list staff names or phone numbers; your team lead will tell you how to check in.</p>
+</div>
+
+<div class="big">
+<div class="card"><div class="num">269</div><div class="lbl">missions (all Open)</div></div>
+<div class="card"><div class="num navy">59</div><div class="lbl">High priority</div></div>
+<div class="card"><div class="num navy">126</div><div class="lbl">Medium priority</div></div>
+<div class="card"><div class="num navy">84</div><div class="lbl">Low priority</div></div>
+<div class="card"><div class="num navy">1,377</div><div class="lbl">buildings at crest in these missions</div></div>
+<div class="card"><div class="num navy">1,077</div><div class="lbl">of those already 1 ft+ now (877 are 18 in+ at crest)</div></div>
+</div>
+
+<div class="safety"><b>Safety.</b> Do not enter floodwater. Floodwater can hide holes, currents and contamination. Eighteen inches or more of water means no vehicle access; go on foot only if it is safe, or skip that house and report it. Check in and out with your team lead. If anyone is in danger, call 911.</div>
+
+<div id="map" role="region" aria-label="Mission map"></div>
+
+<div class="filters noprint">
+<label>County <select id="f-county"><option value="">All counties</option><option value="Brevard">Brevard (78)</option>
+<option value="Volusia">Volusia (66)</option>
+<option value="Seminole">Seminole (58)</option>
+<option value="Putnam">Putnam (32)</option>
+<option value="Lake">Lake (12)</option>
+<option value="Duval">Duval (9)</option>
+<option value="Clay">Clay (7)</option>
+<option value="St. Johns">St. Johns (4)</option>
+<option value="Marion">Marion (2)</option>
+<option value="Orange">Orange (1)</option></select></label>
+<label>Priority <select id="f-pr"><option value="">All</option><option>High</option><option>Medium</option><option>Low</option></select></label>
+<label>Status <select id="f-st"><option value="">All</option><option>Open</option><option>Assigned</option><option>Done</option></select></label>
+<label style="flex:1">Search <input id="f-q" type="search" placeholder="Mission ID, town or street" autocomplete="off"></label>
+</div>
+<p id="count" class="asof"></p>
+<div class="tw"><table id="tbl">
+<thead><tr>
+<th data-k="id">Mission</th><th data-k="county">County</th><th data-k="town">Town</th>
+<th data-k="priority">Priority</th><th data-k="status">Status</th>
+<th data-k="n_crest" class="r">Buildings at crest</th><th data-k="n_now" class="r">1 ft+ now</th>
+<th data-k="n18_crest" class="r">18 in+ at crest</th><th data-k="deepest">Deepest class</th>
+<th>FEMA split</th><th class="noprint">Open</th>
+</tr></thead><tbody></tbody></table></div>
+<p class="asof">Priority: High = 6 or more buildings with 18 in+ at crest, or any building 6 ft or deeper, or 3 or more buildings 3 ft or deeper. Medium = any 18 in+ at crest, or 10 or more buildings, or deepest class 18 in to 3 ft. Low = the rest. Grid cells are 0.5 mile on a side (about 0.25 square mile). Status is Open until a team lead assigns the mission. Rain-ponding buildings are included in the conservative crest set; they have ponding depth where the rain raster provides it, otherwise a 1 ft floor.</p>
+</main>
+<footer><img src="swrf-logo.png" alt=""><p><b>Stormy Weather Response Force (SWRF)</b><br><a href="https://www.stormywx.org">www.stormywx.org</a></p>
+<p style="font-size:13px;opacity:.85;max-width:720px;margin:10px auto 0">Modeled estimates, not inspections. Not for navigation, insurance or eligibility determinations. If you are in danger, call 911.</p>
+<p style="margin:12px 0 0"><a href="https://docs.google.com/forms/d/e/1FAIpQLSdVIxn33px7t8Fp4t0svz_zWzYZ0HEG0m91Hhu8nQNfkBRWgw/viewform" target="_blank" rel="noopener">Request help</a></p></footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="data-missions.js"></script>
+<script>
+(function(){
+  var D = window.FL_MISSIONS; if (!D) return;
+  var M = D.missions, B = D.buildings, BC = ["#a8a8a8", "#ffd92f", "#fd8d3c", "#e31a1c", "#67000d"], CRF = '#dcd8f0', CRE = '#5b4ea8';
+  var priCol = {High:'#e4002b', Medium:'#c57600', Low:'#13315c'};
+  var map = L.map('map', {zoomSnap: 0.25});
+  L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18, maxNativeZoom: 16, attribution: 'USGS The National Map | SWRF Floodline Recon'}).addTo(map);
+  L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSShadedReliefOnly/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18, maxNativeZoom: 16, opacity: 0.5, attribution: 'USGS The National Map'}).addTo(map);
+  var cellLayer = L.layerGroup().addTo(map), bldPane = map.createPane('bld'); bldPane.style.zIndex = 450;
+  var rnd = L.canvas({pane: 'bld', padding: 0.3});
+  var cellById = {}, bldLayer = L.layerGroup().addTo(map);
+  function ringLatLng(ring){ return ring.map(function(p){ return [p[1], p[0]]; }); }
+  B.forEach(function(b){
+    if (!b.g || !b.g.length) return;
+    var col = b.bn < 0 ? CRF : BC[Math.max(0, b.bn)], ec = b.bn < 0 ? CRE : (b.bn >= 3 ? '#000' : '#c00000');
+    var sty = {color: ec, weight: 1, fillColor: col, fillOpacity: 0.9, pane: 'bld', renderer: rnd};
+    if (b.bn < 0) sty.dashArray = '4 3';
+    var poly = L.polygon(ringLatLng(b.g), sty);
+    poly.bindPopup('<b>'+b.mid+' #'+b.no+'</b><br>'+esc(b.addr)+'<br>Now '+b.now+' ft, crest '+b.crest+' ft<br>FEMA: '+esc(b.fema)+(b.zone? ' ('+esc(b.zone)+')':'')+'<br><a href="mission-'+b.mid+'.html">Open mission '+b.mid+'</a>');
+    b._layer = poly; bldLayer.addLayer(poly);
+  });
+  var bounds = [];
+  M.forEach(function(m){
+    var layers = [];
+    (m.rings || []).forEach(function(ring){
+      if (!ring || !ring.length) return;
+      var p = L.polygon(ringLatLng(ring), {color: priCol[m.priority], weight: 2.5, fillColor: priCol[m.priority], fillOpacity: 0.12});
+      p.bindTooltip(m.id, {permanent: true, direction: 'center', className: 'mid-lab', opacity: 0.9});
+      p.bindPopup(popup(m));
+      p.on('click', function(){ highlight(m.id); });
+      layers.push(p); cellLayer.addLayer(p); bounds.push(p.getBounds());
+    });
+    cellById[m.id] = layers;
+  });
+  if (bounds.length){
+    var bb = bounds[0]; bounds.forEach(function(b){ bb.extend(b); });
+    map.fitBounds(bb, {padding: [20, 20], maxZoom: 10});
+  } else map.setView([28.7, -81.2], 8);
+  function syncLabs(){
+    var show = map.getZoom() >= 12;
+    document.querySelectorAll('.leaflet-tooltip.mid-lab').forEach(function(el){ el.style.display = show ? '' : 'none'; });
+  }
+  map.on('zoomend', syncLabs);
+  setTimeout(syncLabs, 0);
+  var key = L.control({position: 'bottomleft'});
+  key.onAdd = function(){
+    var d = L.DomUtil.create('div', 'lg');
+    d.innerHTML = '<h4 id="lgon">Legend</h4><div class="body">'
+      + '<div><span class="sw" style="background:#e4002b;opacity:.4;border-color:#e4002b"></span>High priority cell</div>'
+      + '<div><span class="sw" style="background:#c57600;opacity:.4;border-color:#c57600"></span>Medium priority cell</div>'
+      + '<div><span class="sw" style="background:#13315c;opacity:.4;border-color:#13315c"></span>Low priority cell</div>'
+      + '<div><span class="sw" style="background:#ffd92f;border-color:#c00000"></span>1 ft to under 18 in now</div>'
+      + '<div><span class="sw" style="background:#fd8d3c;border-color:#c00000"></span>18 in to 3 ft now</div>'
+      + '<div><span class="sw" style="background:#e31a1c"></span>3-6 ft now</div>'
+      + '<div><span class="sw" style="background:#67000d"></span>6+ ft now</div>'
+      + '<div><span class="sw" style="background:#dcd8f0;border-color:#5b4ea8;border-style:dashed"></span>1 ft+ only at NWS crest</div>'
+      + '<div><span class="sw" style="background:#a8a8a8"></span>Under 1 ft / dry</div>'
+      + '<small>Click a cell or a house for details. Cell labels are mission IDs.</small></div>';
+    L.DomEvent.disableClickPropagation(d);
+    d.querySelector('#lgon').addEventListener('click', function(){ d.classList.toggle('open'); });
+    return d;
+  };
+  key.addTo(map);
+  try { L.control.scale({imperial: true, metric: false}).addTo(map); } catch(e) {}
+
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function popup(m){
+    return '<b>'+m.id+'</b> <span class="tag '+m.priority+'">'+m.priority+'</span> <span class="tag '+m.status+'">'+m.status+'</span><br>'
+      + esc(m.town)+', '+esc(m.county)+' County<br>'
+      + m.n_crest+' buildings at crest ('+m.n_now+' now, '+m.n18_crest+' 18 in+)<br>'
+      + 'Deepest: '+esc(m.deepest)+'<br>'
+      + 'FEMA: '+m.fema.sfha+' SFHA / '+m.fema.p02+' 0.2% / '+m.fema.out+' outside<br>'
+      + '<a href="mission-'+m.id+'.html">Open this mission</a> · <a href="mission-'+m.id+'.pdf">PDF</a>';
+  }
+  function highlight(id){
+    Object.keys(cellById).forEach(function(k){ cellById[k].forEach(function(p){ p.setStyle({weight: k===id ? 4 : 2.5, fillOpacity: k===id ? 0.28 : 0.12}); }); });
+    var row = document.getElementById('r-'+id); if (row){ row.scrollIntoView({block:'nearest'}); row.style.background='#fff3cd'; setTimeout(function(){ row.style.background=''; }, 1800); }
+  }
+
+  var tbody = document.querySelector('#tbl tbody');
+  var sortK = 'priority', sortDir = 1, rank = {High:0, Medium:1, Low:2, Open:0, Assigned:1, Done:2};
+  function val(m, k){
+    if (k==='priority' || k==='status') return rank[m[k]];
+    if (k==='n18_crest') return m.n18_crest;
+    return m[k];
+  }
+  function visible(){
+    var c = document.getElementById('f-county').value, p = document.getElementById('f-pr').value, s = document.getElementById('f-st').value;
+    var q = document.getElementById('f-q').value.toLowerCase().replace(/[.,#]/g,' ').replace(/\s+/g,' ').trim();
+    var rows = M.filter(function(m){
+      if (c && m.county !== c) return false;
+      if (p && m.priority !== p) return false;
+      if (s && m.status !== s) return false;
+      if (q){
+        var hit = (m.id+' '+m.town+' '+m.county+' '+m.priority).toLowerCase().indexOf(q) >= 0;
+        if (!hit){
+          for (var i=0;i<B.length;i++){ if (B[i].mid===m.id && String(B[i].addr).toLowerCase().indexOf(q)>=0){ hit=true; break; } }
+        }
+        if (!hit) return false;
+      }
+      return true;
+    });
+    rows.sort(function(a,b){
+      var va=val(a,sortK), vb=val(b,sortK);
+      if (va<vb) return -sortDir; if (va>vb) return sortDir; return a.id<b.id?-1:1;
+    });
+    return rows;
+  }
+  function render(){
+    var rows = visible();
+    document.getElementById('count').textContent = rows.length+' of '+M.length+' missions';
+    tbody.innerHTML = rows.map(function(m){
+      return '<tr class="mission" id="r-'+m.id+'" data-id="'+m.id+'"><td><b>'+m.id+'</b></td><td>'+esc(m.county)+'</td><td>'+esc(m.town)+'</td>'
+        + '<td><span class="tag '+m.priority+'">'+m.priority+'</span></td><td><span class="tag '+m.status+'">'+m.status+'</span></td>'
+        + '<td class="r">'+m.n_crest+'</td><td class="r">'+m.n_now+'</td><td class="r">'+m.n18_crest+'</td><td>'+esc(m.deepest)+'</td>'
+        + '<td>'+m.fema.sfha+' / '+m.fema.p02+' / '+m.fema.out+'</td>'
+        + '<td class="noprint"><a href="mission-'+m.id+'.html">Page</a> · <a href="mission-'+m.id+'.pdf">PDF</a></td></tr>';
+    }).join('');
+    var show = {}; rows.forEach(function(m){ show[m.id]=1; });
+    Object.keys(cellById).forEach(function(k){ cellById[k].forEach(function(p){ if (show[k]){ if (!cellLayer.hasLayer(p)) cellLayer.addLayer(p); } else if (cellLayer.hasLayer(p)) cellLayer.removeLayer(p); }); });
+    bldLayer.eachLayer(function(l){ /* keep houses; they help the map */ });
+  }
+  tbody.addEventListener('click', function(ev){
+    var tr = ev.target.closest('tr.mission'); if (!tr) return;
+    if (ev.target.closest('a')) return;
+    var id = tr.getAttribute('data-id'); highlight(id);
+    var m = M.filter(function(x){ return x.id===id; })[0];
+    if (m && cellById[id] && cellById[id][0]) map.fitBounds(cellById[id][0].getBounds(), {padding:[30,30], maxZoom:15});
+  });
+  document.querySelectorAll('#tbl th[data-k]').forEach(function(th){
+    th.addEventListener('click', function(){ var k=th.getAttribute('data-k'); if (sortK===k) sortDir*=-1; else {sortK=k; sortDir=1;} render(); });
+  });
+  ['f-county','f-pr','f-st'].forEach(function(id){ document.getElementById(id).addEventListener('change', render); });
+  document.getElementById('f-q').addEventListener('input', render);
+  render();
+})();
+</script>
+<!-- FL-MOBILE-CREDITS start --><style>@media (max-width:700px){.leaflet-container .leaflet-control-attribution{font-size:9px!important;line-height:14px!important;padding:0 5px!important;max-width:calc(100vw - 30px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}.leaflet-container .leaflet-control-attribution.open{white-space:normal;overflow:visible}.leaflet-container .leaflet-bottom.leaflet-left{bottom:16px}.leaflet-container .leaflet-bottom.leaflet-right .leaflet-control-scale{margin-bottom:4px}}</style><script>document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest(".leaflet-control-attribution");if(a&&!e.target.closest("a"))a.classList.toggle("open");});</script><!-- FL-MOBILE-CREDITS end -->
+</body></html>

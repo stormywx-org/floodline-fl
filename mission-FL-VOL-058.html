@@ -1,0 +1,140 @@
+<!doctype html><html lang="en"><head><link rel="icon" href="swrf-logo.png"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mission FL-VOL-058: New Smyrna Beach, Volusia County | SWRF Floodline Recon FL</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>:root{--navy:#0b2545;--blue:#13315c;--accent:#e4002b;--ink:#1d2433;--muted:#5a6475;--bg:#f5f7fa;--line:#dfe4ec;--high:#e4002b;--med:#c57600;--low:#13315c}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.45}
+a{color:var(--blue)} header{background:var(--navy);color:#fff} header .wrap{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;padding:12px 18px} header img{width:52px;height:52px}
+header b{display:block;font-size:17px} header small{display:block;font-size:13px;opacity:.85} header a{color:#fff;text-decoration:none} header .sp{flex:1}
+nav.top{display:flex;gap:16px;flex-wrap:wrap} nav.top a{color:#fff;font-weight:700;font-size:15px;text-decoration:none} .bar{height:5px;background:var(--accent)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+h1{color:var(--navy);font-size:clamp(26px,5vw,36px);margin:22px 0 6px} h2{color:var(--navy);font-size:24px;margin:30px 0 10px} h3{color:var(--navy);margin:0 0 6px;font-size:20px}
+.asof{color:var(--muted);font-size:15px;margin:0 0 16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:12px 0}
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:16px 0}
+.big .card{margin:0;text-align:center} .num{font-size:32px;font-weight:800;color:var(--accent);line-height:1.1} .num.navy{color:var(--navy)} .lbl{font-size:15px;color:var(--muted)}
+.note{background:#fff8e6;border:1px solid #f2d38a;border-radius:10px;padding:12px 16px;margin:12px 0}
+.safety{background:#fdeeee;border:1px solid #f5b5b5;border-radius:10px;padding:12px 16px;margin:12px 0}
+.btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;padding:13px 20px;border-radius:10px;margin:4px 8px 4px 0} .btn.alt{background:#fff;color:var(--navy);border:1px solid var(--navy)} .btn.navy{background:var(--navy);color:#fff}
+table{width:100%;border-collapse:collapse;background:#fff;font-size:15px} th,td{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top} th{background:var(--navy);color:#fff;cursor:pointer;white-space:nowrap} th:hover{background:var(--blue)}
+td.r,th.r{text-align:right} .tw{overflow-x:auto;border-radius:10px;border:1px solid var(--line)}
+.tag{display:inline-block;font-weight:700;font-size:12px;padding:2px 8px;border-radius:999px;color:#fff} .tag.High{background:var(--high)} .tag.Medium{background:var(--med)} .tag.Low{background:var(--low)} .tag.Open{background:#1b7a3d} .tag.Assigned{background:var(--med)} .tag.Done{background:#5a6475}
+#map{height:560px;width:100%;border:1px solid var(--line);border-radius:10px;margin:12px 0}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
+.filters label{font-weight:700;color:var(--navy);font-size:14px} .filters select,.filters input{font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:8px}
+.filters input{min-width:180px;flex:1}
+footer{background:var(--navy);color:#fff;text-align:center;padding:26px 18px;margin-top:34px} footer a{color:#fff;font-weight:700} footer img{width:56px;height:56px}
+@media (max-width:640px){body{font-size:17px} header img{width:40px;height:40px} header small{display:none} nav.top{width:100%;gap:14px} nav.top a{font-size:14px} #map{height:300px} th,td{padding:6px;font-size:14px} .btn{padding:12px 16px} .filters{flex-direction:column;align-items:stretch}}
+@media print{header,.filters,footer,.noprint{display:none !important} #map{height:420px;border:none} body{background:#fff} a{color:#000}}
+
+#map{height:480px}
+.check{margin:8px 0 0} .check li{margin:0 0 6px}
+td.chk,td.notes,th.chk,th.notes{min-width:70px}
+a.rep{color:#0b2545;font-weight:700;text-decoration:underline;text-underline-offset:2px} a.rep:hover,a.rep:active{color:#e4002b}
+.rtag{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:#e4002b;border-radius:999px;padding:1px 7px;margin-left:4px;vertical-align:1px}
+@media print{.rtag{display:none} a.rep{color:#000;text-decoration:none;font-weight:normal}}
+@media print{
+  @page{size:landscape;margin:0.4in}
+  nav.top,footer,.noprint,.btn{display:none !important}
+  header{background:#fff;color:#000;border-bottom:3px solid #e4002b} header a{color:#000}
+  #map{height:4.2in;page-break-inside:avoid}
+  table{font-size:10px} th,td{padding:3px 4px}
+  .safety,.card{break-inside:avoid}
+  h1{font-size:22px;margin:8px 0 4px} h2{margin:10px 0 6px}
+  td.chk,td.notes{border:1px solid #888;height:16px}
+}
+</style></head><body>
+<header><div class="wrap"><img src="swrf-logo.png" alt="SWRF logo"><div><b><a href="https://www.stormywx.org">Stormy Weather Response Force</a></b><small>www.stormywx.org</small></div><span class="sp"></span>
+<nav class="top"><a href="index.html">Overview</a><a href="map.html">Map</a><a href="methods.html">How we estimate</a><a href="lookup.html">Flood lookup</a><a href="https://docs.google.com/forms/d/e/1FAIpQLSdVIxn33px7t8Fp4t0svz_zWzYZ0HEG0m91Hhu8nQNfkBRWgw/viewform" target="_blank" rel="noopener">Request help</a><a href="missions.html">Volunteer Missions</a></nav></div></header><div class="bar"></div>
+
+<main class="wrap">
+<p class="noprint" style="margin-top:16px"><a href="missions.html">All missions</a></p>
+<h1>Mission FL-VOL-058 <span class="tag Low">Low</span> <span class="tag Open">Open</span></h1>
+<p class="asof">New Smyrna Beach, Volusia County. As of Sat Nov 21, 2:00 PM ET (Update 11/21 2 PM). 1 buildings at the forecast crest, 1 already 1 ft or more now, 0 are 18 in or more at crest. Deepest class: 1 ft to under 18 in. FEMA: 0 in the 1% floodplain, 0 in the 0.2% zone, 1 outside. Cell about 0.25 square miles.</p>
+<p class="noprint"><a class="btn" href="mission-FL-VOL-058.pdf">Download detail map (PDF)</a>
+<a class="btn alt" href="https://www.google.com/maps/dir/?api=1&amp;destination=29.006743,-80.877113" target="_blank" rel="noopener">Google Maps directions to the start point</a>
+<a class="btn navy" href="missions.html">All missions</a></p>
+
+<div id="map" role="region" aria-label="Mission FL-VOL-058 map"></div>
+
+<div class="safety"><b>Safety.</b> Do not enter floodwater. Floodwater can hide holes, currents and contamination. Eighteen inches or more of water means no vehicle access; go on foot only if it is safe, or skip that house and report it. Check in and out with your team lead. If anyone is in danger, call 911.</div>
+
+<div class="card">
+<h3>Start point</h3>
+<p>Begin at 29.00674, -80.87711 (building #1, near the center of the cell).
+<a href="https://www.google.com/maps/dir/?api=1&amp;destination=29.006743,-80.877113" target="_blank" rel="noopener">Google Maps directions</a>.</p>
+<h3>What to do</h3>
+<ol class="check">
+<li>Check in with your team lead before you start.</li>
+<li>Wellness check at each numbered building (is anyone home, is everyone all right).</li>
+<li>Note needs (food, medical, pump-out, shelter, no access) in the Notes column.</li>
+<li>Mark the building Visited in the Checked column.</li>
+<li>Check out with your team lead when you finish or if you have to stop.</li>
+</ol>
+<p>Your team lead assigns this mission. Please do not start it until it is assigned to you. These pages do not list staff names or phone numbers.</p>
+</div>
+
+<h2>Address list</h2>
+<p class="noprint"><b>Field reports:</b> tap the address of the house you checked (in this list or on the map) to open its report form. The mission, Map ID and address are filled in for you. Send one report per house, with water depth, damage, a severity from 1 to 5 and photos (photo upload needs a Google sign-in).</p>
+<p class="asof">Depth is a modeled estimate in feet at the building footprint (Now = current gauge level or current ponding; Crest = NWS forecast crest, the lower of the last two tidal highs on the tide-affected river below Palatka, or the ponding depth for rain-only buildings). FEMA zone is from the official NFHL. Verify on the ground. The Checked and Notes columns are for use in the printed PDF.</p>
+<div class="tw"><table>
+<thead><tr><th class="r">No.</th><th>Address</th><th class="r">Now ft</th><th class="r">Crest ft</th><th>18 in+</th><th>FEMA</th><th>Source</th><th class="chk">Checked</th><th class="notes">Notes</th></tr></thead>
+<tbody>
+<tr><td class="r">1</td><td><a class="rep" href="https://docs.google.com/forms/d/e/1FAIpQLSer_1uKEqW_ehj5bT091QJN9BLpYlXnvB4Fy_1ADd6-oy8kOA/viewform?usp=pp_url&amp;entry.305893957=FL-VOL-058&amp;entry.1865820906=FL-VOL-058-H01&amp;entry.3909464=4071%20S%20Atlantic%20Av%2C%20New%20Smyrna%20Beach%2C%20FL%2032169" target="_blank" rel="noopener" title="Open the field report for this house">4071 S Atlantic Av, New Smyrna Beach, FL 32169</a> <span class="rtag">Report</span></td><td class="r">1.1</td><td class="r">1.1</td><td></td><td>Outside (X)</td><td>Rain ponding</td><td class="chk"></td><td class="notes"></td></tr>
+</tbody></table></div>
+<p class="asof">Modeled estimate from USGS/NWS gauges, USGS 3DEP elevation and (for rain) MRMS rain versus Atlas 14 drainage capacity. Not a survey. Not for navigation, insurance or eligibility determinations. Prepared Sat Nov 21, 2026, 3:01 PM ET by SWRF Floodline Recon FL. www.stormywx.org</p>
+</main>
+<footer><img src="swrf-logo.png" alt=""><p><b>Stormy Weather Response Force (SWRF)</b><br><a href="https://www.stormywx.org">www.stormywx.org</a></p>
+<p style="font-size:13px;opacity:.85;max-width:720px;margin:10px auto 0">Modeled estimates, not inspections. Not for navigation, insurance or eligibility determinations. If you are in danger, call 911.</p>
+<p style="margin:12px 0 0"><a href="https://docs.google.com/forms/d/e/1FAIpQLSdVIxn33px7t8Fp4t0svz_zWzYZ0HEG0m91Hhu8nQNfkBRWgw/viewform" target="_blank" rel="noopener">Request help</a></p></footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="data-missions.js"></script>
+<script>
+(function(){
+  var D = window.FL_MISSIONS; if (!D) return;
+  var mid = "FL-VOL-058"; var RF = "https://docs.google.com/forms/d/e/1FAIpQLSer_1uKEqW_ehj5bT091QJN9BLpYlXnvB4Fy_1ADd6-oy8kOA/viewform";
+  function rurl(b){ return RF + '?usp=pp_url&entry.305893957=' + encodeURIComponent(mid) + '&entry.1865820906=' + encodeURIComponent(b.map_id) + '&entry.3909464=' + encodeURIComponent(b.addr || ''); }
+  var m = D.missions.filter(function(x){ return x.id===mid; })[0];
+  var B = D.buildings.filter(function(b){ return b.mid===mid; });
+  var BC = ["#a8a8a8", "#ffd92f", "#fd8d3c", "#e31a1c", "#67000d"], CRF = '#dcd8f0', CRE = '#5b4ea8';
+  var priCol = {High:'#e4002b', Medium:'#c57600', Low:'#13315c'};
+  var map = L.map('map', {zoomSnap: 0.25});
+  L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18, maxNativeZoom: 16, attribution: 'USGS The National Map | SWRF Floodline Recon'}).addTo(map);
+  L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSShadedReliefOnly/MapServer/tile/{z}/{y}/{x}', {maxZoom: 18, maxNativeZoom: 16, opacity: 0.5, attribution: 'USGS The National Map'}).addTo(map);
+  function ringLatLng(ring){ return ring.map(function(p){ return [p[1], p[0]]; }); }
+  if (m && m.rings){
+    m.rings.forEach(function(ring){
+      L.polygon(ringLatLng(ring), {color: priCol[m.priority], weight: 2.5, fill: false}).addTo(map);
+    });
+  }
+  var pane = map.createPane('bld'); pane.style.zIndex = 450;
+  var bb = [];
+  B.forEach(function(b){
+    if (!b.g || !b.g.length) return;
+    var col = b.bn < 0 ? CRF : BC[Math.max(0, b.bn)], ec = b.bn < 0 ? CRE : (b.bn >= 3 ? '#000' : '#c00000');
+    var sty = {color: ec, weight: 1.2, fillColor: col, fillOpacity: 0.92, pane: 'bld'};
+    if (b.bn < 0) sty.dashArray = '4 3';
+    var p = L.polygon(ringLatLng(b.g), sty).addTo(map);
+    p.bindPopup('<b>#'+b.no+'</b> <a class="rep" href="'+esc(rurl(b))+'" target="_blank" rel="noopener">'+esc(b.addr)+'</a> <span class="rtag">Report</span><br>Now '+b.now+' ft, crest '+b.crest+' ft<br>FEMA: '+esc(b.fema)+(b.zone? ' ('+esc(b.zone)+')':''));
+    var c = p.getBounds().getCenter();
+    L.marker(c, {icon: L.divIcon({className: 'nlab', html: '<span>'+b.no+'</span>', iconSize: [18,18]})}).addTo(map);
+    bb.push(p.getBounds());
+  });
+  if (m) L.circleMarker([m.lat, m.lon], {radius: 7, color: '#0b2545', fillColor: '#fff', fillOpacity: 1, weight: 2}).addTo(map).bindTooltip('Start', {permanent: true, direction: 'right'});
+  if (bb.length){ var u=bb[0]; bb.forEach(function(b){ u.extend(b); }); map.fitBounds(u, {padding:[24,24], maxZoom:17}); }
+  else if (m) map.setView([m.lat, m.lon], 16);
+  var key = L.control({position: 'topright'});
+  key.onAdd = function(){
+    var d = L.DomUtil.create('div', 'lg');
+    d.style.cssText = 'background:#fff;padding:8px 10px;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,.3);font-size:12px;line-height:1.45';
+    d.innerHTML = '<b style="color:#0b2545">Legend</b><br>Colored houses = depth now<br>Purple hatch / dashed = 1 ft+ only at crest<br>Navy dot = start point<br>Cell outline = mission FL-VOL-058';
+    L.DomEvent.disableClickPropagation(d); return d;
+  };
+  key.addTo(map);
+  try { L.control.scale({imperial: true, metric: false}).addTo(map); } catch(e) {}
+  var st = document.createElement('style'); st.textContent = '.nlab span{display:block;width:18px;height:18px;border-radius:50%;background:#fff;border:1px solid #111;font:bold 10px/18px sans-serif;text-align:center;color:#111} .leaflet-tooltip{background:#0b2545;color:#fff;border:none;font-weight:700}';
+  document.head.appendChild(st);
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+})();
+</script>
+<!-- FL-MOBILE-CREDITS start --><style>@media (max-width:700px){.leaflet-container .leaflet-control-attribution{font-size:9px!important;line-height:14px!important;padding:0 5px!important;max-width:calc(100vw - 30px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}.leaflet-container .leaflet-control-attribution.open{white-space:normal;overflow:visible}.leaflet-container .leaflet-bottom.leaflet-left{bottom:16px}.leaflet-container .leaflet-bottom.leaflet-right .leaflet-control-scale{margin-bottom:4px}}</style><script>document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest(".leaflet-control-attribution");if(a&&!e.target.closest("a"))a.classList.toggle("open");});</script><!-- FL-MOBILE-CREDITS end -->
+</body></html>
