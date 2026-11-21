@@ -32,9 +32,10 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:16px}
 <h1>Florida flood lookup</h1>
 <p class="lead">Type an address, town or ZIP code to see what our flood map shows at that spot. If you are in danger, call 911.</p>
 <form class="q" id="q" autocomplete="off"><input id="addr" type="search" placeholder="Address, town or ZIP, e.g. Geneva FL or 32732" aria-label="Address, town or ZIP"><button class="btn" type="submit">Look up</button><button class="btn navy" type="button" id="me">Use my location</button></form>
+<div id="bldhit" class="card"></div>
 <p class="hint">You can also tap the map. Your search goes to a map search service (Esri or OpenStreetMap) to find the spot; SWRF does not save it.</p>
 <div class="grid"><div class="card" id="res"><h2>Results</h2><p>Search for a place, or tap the map.</p></div><div id="map"></div></div>
-<div class="note">These are modeled estimates from river gauges, rain and land height, not inspections. Our map pixels are about 50 m (160 ft) wide, so a single house can be off. "6 ft or more" can be the river or a lake itself. Rain ponding is a screening estimate. Updated Fri Nov 20, 2026, 10:41 PM ET.</div>
+<div class="note">These are modeled estimates from river gauges, rain and land height, not inspections. Our map pixels are about 50 m (160 ft) wide, so a single house can be off. "6 ft or more" can be the river or a lake itself. Rain ponding is a screening estimate. Updated Sat Nov 21, 2026, 7:57 AM ET.</div>
 </div>
 <footer>Stormy Weather Response Force | <a href="https://www.stormywx.org">www.stormywx.org</a> | <a href="methods.html">How we estimate</a></footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -142,4 +143,88 @@ document.getElementById('me').onclick = function(){ if (!navigator.geolocation){
   navigator.geolocation.getCurrentPosition(function(p){ ALTS = []; AREA = ''; show(p.coords.latitude, p.coords.longitude, 'Your location'); }, function(){ document.getElementById('res').innerHTML = '<h2>Location not shared</h2><p>Type an address instead, or tap the map.</p>'; }); };
 map.on('click', function(e){ ALTS = []; AREA = ''; show(e.latlng.lat, e.latlng.lng, 'Map point'); });
 var qs = new URLSearchParams(location.search).get('q'); if (qs){ document.getElementById('addr').value = qs; document.getElementById('q').requestSubmit(); }
-</script></body></html>
+</script><!-- FL-BUILDINGS start -->
+<style>.bld-pop b{color:#0b2545}.bld-pop small{color:#5a6475}.bldkey{background:#fff;padding:6px 8px;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.3);font:12px/1.35 Arial,sans-serif;max-width:220px}
+.bldkey i{display:inline-block;width:12px;height:10px;margin-right:5px;border:1px solid #333;vertical-align:-1px}.bldkey label{display:block;font-weight:bold;margin-bottom:3px;cursor:pointer}
+#bldhit{margin:10px 0;display:none}#bldhit table{border-collapse:collapse;width:100%;font-size:14px}#bldhit td,#bldhit th{border-bottom:1px solid #dfe4ec;padding:4px;text-align:left}#bldhit th{background:#0b2545;color:#fff}</style>
+<script src="data-fl_buildings.js"></script>
+<script>
+(function(){
+  if (typeof map === 'undefined' || !window.FL_BLD) return;
+  var BC = ['#a8a8a8', '#ffd92f', '#fd8d3c', '#e31a1c', '#67000d'], CL = ['under 1 ft', '1 ft to under 18 in', '18 in to 3 ft', '3-6 ft', '6+ ft'];
+  var F = FL_BLD.f, ix = {}; F.forEach(function(k, i){ ix[k] = i; });
+  function e(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function ll(ring){ return ring.map(function(p){ return [p[1], p[0]]; }); }
+  var pane = map.createPane('bld'); pane.style.zIndex = 450;
+  var rnd = L.canvas({pane: 'bld', padding: 0.3});
+  var other = L.layerGroup(), aff = L.layerGroup(), R = [];
+  FL_BLD.o.forEach(function(g){ other.addLayer(L.polygon(ll(g[0]), {pane: 'bld', renderer: rnd, color: '#444', weight: 0.6, fillColor: '#a8a8a8', fillOpacity: 0.85, interactive: false})); });
+  FL_BLD.a.forEach(function(a){
+    var now = a[ix.now] >= 1, st;
+    if (now) st = {pane: 'bld', renderer: rnd, color: a[ix.bn] <= 2 ? '#c00000' : '#000', weight: 1.4, fillColor: BC[a[ix.bn]], fillOpacity: 0.95};
+    else st = {pane: 'bld', renderer: rnd, color: '#5b4ea8', weight: 1.4, dashArray: '3,2', fillColor: '#dcd8f0', fillOpacity: 0.9};
+    var p = L.polygon(ll(a[0][0]), st);
+    var html = '<div class="bld-pop"><b>' + e(a[ix.addr]) + '</b><br><small>Address confidence ' + e(a[ix.cf]) + ' (verify on the ground)</small><br>'
+      + 'Map ID <b>' + e(a[ix.id]) + '</b> (' + e(a[ix.town] ? a[ix.town] + ', ' : '') + e(a[ix.county]) + ' County)<br>'
+      + 'Modeled water at the building now: <b>' + (now ? a[ix.now].toFixed(1) + ' ft (' + CL[a[ix.bn]] + ')' : 'under 1 ft') + '</b><br>'
+      + (a[ix.hasf] ? 'At the NWS forecast crest: <b>' + a[ix.crest].toFixed(1) + ' ft (' + CL[a[ix.bc]] + ')</b>' : 'No NWS crest forecast here (held at today\'s level)')
+      + (a[ix.pdf] ? '<br><a href="maps/' + e(a[ix.pdf]) + '" target="_blank" rel="noopener">House-level detail sheet (PDF)</a>' : '')
+      + '<br><small>Modeled estimate, not an inspection. Depth is at the ground, not inside.</small></div>';
+    p.bindPopup(html); aff.addLayer(p); R.push({a: a, p: p});
+  });
+  var MINZ = 14, on = true;
+  function sync(){ var z = map.getZoom(); [other, aff].forEach(function(l){ if (on && z >= MINZ){ if (!map.hasLayer(l)) map.addLayer(l); } else if (map.hasLayer(l)) map.removeLayer(l); }); }
+  map.on('zoomend', sync); sync();
+  var key = L.control({position: 'bottomleft'});
+  key.onAdd = function(){ var d = L.DomUtil.create('div', 'bldkey');
+    d.innerHTML = '<label><input type="checkbox" checked id="bldon"> Buildings (zoom in)</label>'
+      + '<i style="background:#ffd92f;border-color:#c00000"></i>1 ft to under 18 in now<br><i style="background:#fd8d3c;border-color:#c00000"></i>18 in to 3 ft now<br>'
+      + '<i style="background:#e31a1c"></i>3-6 ft now<br><i style="background:#67000d"></i>6+ ft now<br><i style="background:#dcd8f0;border-color:#5b4ea8;border-style:dashed"></i>1 ft+ only at NWS crest<br>'
+      + '<i style="background:#a8a8a8"></i>Under 1 ft / dry<br><small>Click a colored building for its address and depth.</small>';
+    L.DomEvent.disableClickPropagation(d);
+    d.querySelector('#bldon').addEventListener('change', function(ev){ on = ev.target.checked; sync(); });
+    return d; };
+  key.addTo(map);
+  window.FL_BLD_FIND = function(q){
+    var n = String(q || '').toLowerCase().replace(/[.,#]/g, ' ').replace(/\s+/g, ' ').trim(); if (n.length < 5) return null;
+    var id = n.toUpperCase().replace(/\s/g, '');
+    for (var i = 0; i < R.length; i++){ var a = R[i].a; if (a[ix.id].replace(/-/g, '') === id.replace(/-/g, '')) return R[i]; }
+    for (var j = 0; j < R.length; j++){ var t = String(R[j].a[ix.addr]).toLowerCase().replace(/[.,#]/g, ' ').replace(/\s+/g, ' '); if (t.indexOf(n) === 0) return R[j]; }
+    return null; };
+  window.FL_BLD_NEAR = function(lat, lon, m){ var out = []; R.forEach(function(r){ var a = r.a, dy = (a[ix.lat] - lat) * 111320, dx = (a[ix.lon] - lon) * 111320 * Math.cos(lat * Math.PI / 180); var d = Math.sqrt(dx * dx + dy * dy); if (d <= m) out.push({r: r, d: d}); }); return out.sort(function(x, y){ return x.d - y.d; }); };
+  window.FL_BLD_OPEN = function(r){ map.setView([r.a[ix.lat], r.a[ix.lon]], 18); setTimeout(function(){ r.p.openPopup(); }, 300); };
+  window.FL_BLD_IX = ix; window.FL_BLD_CL = CL;
+})();
+</script>
+<!-- FL-BUILDINGS end -->
+<!-- FL-BUILDINGS-LOOKUP start -->
+<script>
+(function(){
+  var form = document.getElementById('q'), box = document.getElementById('bldhit'); if (!form || !window.FL_BLD_FIND) return;
+  function e(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  var ix = window.FL_BLD_IX, CL = window.FL_BLD_CL;
+  function table(list, title){
+    if (!list.length){ box.style.display = 'none'; return; }
+    var h = '<h3 style="margin:0 0 6px">' + e(title) + '</h3><table><tr><th>Address</th><th>Map ID</th><th>Now</th><th>At NWS crest</th></tr>';
+    list.slice(0, 12).forEach(function(x, k){ var a = x.r.a; h += '<tr><td><a href="#" data-k="' + k + '">' + e(a[ix.addr]) + '</a></td><td>' + e(a[ix.id]) + '</td><td>' + (a[ix.now] >= 1 ? a[ix.now].toFixed(1) + ' ft' : 'under 1 ft') + '</td><td>' + (a[ix.hasf] ? a[ix.crest].toFixed(1) + ' ft' : 'n/a') + '</td></tr>'; });
+    box.innerHTML = h + '</table><p style="font-size:13px;color:#5a6475;margin:4px 0 0">Buildings with 1 ft+ of modeled river water at the building now or at the crest. Modeled estimate, not an inspection.</p>';
+    box.style.display = 'block';
+    box.querySelectorAll('a[data-k]').forEach(function(el){ el.addEventListener('click', function(ev){ ev.preventDefault(); window.FL_BLD_OPEN(list[+el.getAttribute('data-k')].r); }); });
+  }
+  form.addEventListener('submit', function(ev){
+    var q = document.getElementById('addr').value, r = window.FL_BLD_FIND(q);
+    if (r){ ev.preventDefault(); ev.stopImmediatePropagation(); table([{r: r, d: 0}], 'Building found in the flood model'); window.FL_BLD_OPEN(r); }
+  }, true);
+  // any other search: when the lookup moves the map to the place, list modeled flooded buildings near it
+  var pending = false; window.FL_BLD_PENDING = function(){ return pending; };
+  form.addEventListener('submit', function(){ if (!window.FL_BLD_FIND(document.getElementById('addr').value)){ pending = true; box.style.display = 'none'; } }, true);
+  var pendT = 0;
+  form.addEventListener('submit', function(){ pendT = Date.now(); }, true);
+  map.on('moveend', function(){ if (!pending || Date.now() - pendT > 20000) return; var c = map.getCenter();
+    var rad = map.getZoom() >= 15 ? 600 : 8000, near = window.FL_BLD_NEAR(c.lat, c.lng, rad);
+    if (near.length){ pending = false; } else return;
+    if (near.length) table(near, 'Modeled flooded buildings within ' + (rad < 1000 ? rad + ' m' : '5 miles') + ' of this place (' + near.length + '; closest 12 shown, click to zoom)'); });
+})();
+</script>
+<!-- FL-BUILDINGS-LOOKUP end -->
+</body></html>

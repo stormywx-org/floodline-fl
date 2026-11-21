@@ -74,4 +74,58 @@ lg.onAdd = function () { var d = L.DomUtil.create('div', 'lg'); d.innerHTML =
  '<div class="note">River model covers the St. Johns through Brevard, from the Indian River County line to Lake Harney (full-corridor windows). About 103 buildings have 18 in or more of river water now (112 at the forecast crest). Rain-driven street flooding and the Indian River Lagoon are not modeled and are not in the 18-inch counts. Estimates, not inspections.</div></div>';
  L.DomEvent.disableClickPropagation(d); return d; };
 lg.addTo(map);
-</script></body></html>
+</script><!-- FL-BUILDINGS start -->
+<style>.bld-pop b{color:#0b2545}.bld-pop small{color:#5a6475}.bldkey{background:#fff;padding:6px 8px;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.3);font:12px/1.35 Arial,sans-serif;max-width:220px}
+.bldkey i{display:inline-block;width:12px;height:10px;margin-right:5px;border:1px solid #333;vertical-align:-1px}.bldkey label{display:block;font-weight:bold;margin-bottom:3px;cursor:pointer}
+#bldhit{margin:10px 0;display:none}#bldhit table{border-collapse:collapse;width:100%;font-size:14px}#bldhit td,#bldhit th{border-bottom:1px solid #dfe4ec;padding:4px;text-align:left}#bldhit th{background:#0b2545;color:#fff}</style>
+<script src="data-fl_buildings.js"></script>
+<script>
+(function(){
+  if (typeof map === 'undefined' || !window.FL_BLD) return;
+  var BC = ['#a8a8a8', '#ffd92f', '#fd8d3c', '#e31a1c', '#67000d'], CL = ['under 1 ft', '1 ft to under 18 in', '18 in to 3 ft', '3-6 ft', '6+ ft'];
+  var F = FL_BLD.f, ix = {}; F.forEach(function(k, i){ ix[k] = i; });
+  function e(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function ll(ring){ return ring.map(function(p){ return [p[1], p[0]]; }); }
+  var pane = map.createPane('bld'); pane.style.zIndex = 450;
+  var rnd = L.canvas({pane: 'bld', padding: 0.3});
+  var other = L.layerGroup(), aff = L.layerGroup(), R = [];
+  FL_BLD.o.forEach(function(g){ other.addLayer(L.polygon(ll(g[0]), {pane: 'bld', renderer: rnd, color: '#444', weight: 0.6, fillColor: '#a8a8a8', fillOpacity: 0.85, interactive: false})); });
+  FL_BLD.a.forEach(function(a){
+    var now = a[ix.now] >= 1, st;
+    if (now) st = {pane: 'bld', renderer: rnd, color: a[ix.bn] <= 2 ? '#c00000' : '#000', weight: 1.4, fillColor: BC[a[ix.bn]], fillOpacity: 0.95};
+    else st = {pane: 'bld', renderer: rnd, color: '#5b4ea8', weight: 1.4, dashArray: '3,2', fillColor: '#dcd8f0', fillOpacity: 0.9};
+    var p = L.polygon(ll(a[0][0]), st);
+    var html = '<div class="bld-pop"><b>' + e(a[ix.addr]) + '</b><br><small>Address confidence ' + e(a[ix.cf]) + ' (verify on the ground)</small><br>'
+      + 'Map ID <b>' + e(a[ix.id]) + '</b> (' + e(a[ix.town] ? a[ix.town] + ', ' : '') + e(a[ix.county]) + ' County)<br>'
+      + 'Modeled water at the building now: <b>' + (now ? a[ix.now].toFixed(1) + ' ft (' + CL[a[ix.bn]] + ')' : 'under 1 ft') + '</b><br>'
+      + (a[ix.hasf] ? 'At the NWS forecast crest: <b>' + a[ix.crest].toFixed(1) + ' ft (' + CL[a[ix.bc]] + ')</b>' : 'No NWS crest forecast here (held at today\'s level)')
+      + (a[ix.pdf] ? '<br><a href="../maps/' + e(a[ix.pdf]) + '" target="_blank" rel="noopener">House-level detail sheet (PDF)</a>' : '')
+      + '<br><small>Modeled estimate, not an inspection. Depth is at the ground, not inside.</small></div>';
+    p.bindPopup(html); aff.addLayer(p); R.push({a: a, p: p});
+  });
+  var MINZ = 14, on = true;
+  function sync(){ var z = map.getZoom(); [other, aff].forEach(function(l){ if (on && z >= MINZ){ if (!map.hasLayer(l)) map.addLayer(l); } else if (map.hasLayer(l)) map.removeLayer(l); }); }
+  map.on('zoomend', sync); sync();
+  var key = L.control({position: 'bottomleft'});
+  key.onAdd = function(){ var d = L.DomUtil.create('div', 'bldkey');
+    d.innerHTML = '<label><input type="checkbox" checked id="bldon"> Buildings (zoom in)</label>'
+      + '<i style="background:#ffd92f;border-color:#c00000"></i>1 ft to under 18 in now<br><i style="background:#fd8d3c;border-color:#c00000"></i>18 in to 3 ft now<br>'
+      + '<i style="background:#e31a1c"></i>3-6 ft now<br><i style="background:#67000d"></i>6+ ft now<br><i style="background:#dcd8f0;border-color:#5b4ea8;border-style:dashed"></i>1 ft+ only at NWS crest<br>'
+      + '<i style="background:#a8a8a8"></i>Under 1 ft / dry<br><small>Click a colored building for its address and depth.</small>';
+    L.DomEvent.disableClickPropagation(d);
+    d.querySelector('#bldon').addEventListener('change', function(ev){ on = ev.target.checked; sync(); });
+    return d; };
+  key.addTo(map);
+  window.FL_BLD_FIND = function(q){
+    var n = String(q || '').toLowerCase().replace(/[.,#]/g, ' ').replace(/\s+/g, ' ').trim(); if (n.length < 5) return null;
+    var id = n.toUpperCase().replace(/\s/g, '');
+    for (var i = 0; i < R.length; i++){ var a = R[i].a; if (a[ix.id].replace(/-/g, '') === id.replace(/-/g, '')) return R[i]; }
+    for (var j = 0; j < R.length; j++){ var t = String(R[j].a[ix.addr]).toLowerCase().replace(/[.,#]/g, ' ').replace(/\s+/g, ' '); if (t.indexOf(n) === 0) return R[j]; }
+    return null; };
+  window.FL_BLD_NEAR = function(lat, lon, m){ var out = []; R.forEach(function(r){ var a = r.a, dy = (a[ix.lat] - lat) * 111320, dx = (a[ix.lon] - lon) * 111320 * Math.cos(lat * Math.PI / 180); var d = Math.sqrt(dx * dx + dy * dy); if (d <= m) out.push({r: r, d: d}); }); return out.sort(function(x, y){ return x.d - y.d; }); };
+  window.FL_BLD_OPEN = function(r){ map.setView([r.a[ix.lat], r.a[ix.lon]], 18); setTimeout(function(){ r.p.openPopup(); }, 300); };
+  window.FL_BLD_IX = ix; window.FL_BLD_CL = CL;
+})();
+</script>
+<!-- FL-BUILDINGS end -->
+</body></html>
