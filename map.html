@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<!doctype html><html lang="en"><head><link rel="icon" href="swrf-logo.png"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Florida flood map, November 2026 | Stormy Weather Response Force</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>:root{--navy:#0b2545;--accent:#e4002b;--ink:#1d2433}
@@ -9,8 +9,9 @@ header img{width:44px;height:44px} header b{display:block;font-size:17px;line-he
 .lg{background:#fff;padding:10px 12px;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,.3);font-size:13px;line-height:1.5;max-width:260px} .lg h4{margin:0 0 4px;color:var(--navy);cursor:pointer}
 .sw{display:inline-block;width:14px;height:14px;vertical-align:middle;margin-right:6px;border:1px solid #555} .dot{border-radius:50%}
 @media (max-width:700px){header small{display:none} header b{font-size:15px} header img{width:34px;height:34px} header .back{font-size:13px;margin-left:6px} .lg .body{display:none} .lg.open .body{display:block} .lg{max-width:220px;font-size:12px} .note{font-size:12px}}
+@media (max-width:700px){.leaflet-bottom.leaflet-left .lg{margin-bottom:34px}}
 </style></head><body>
-<header><img src="swrf-logo.png" alt="SWRF logo"><div><b><a href="https://www.stormywx.org" style="text-decoration:none">Stormy Weather Response Force</a></b><small>www.stormywx.org | Florida flood map</small></div><span class="sp"></span><a class="back" href="index.html">Overview</a><a class="back" href="methods.html">Methods</a></header>
+<header><img src="swrf-logo.png" alt="SWRF logo"><div><b><a href="https://www.stormywx.org" style="text-decoration:none">Stormy Weather Response Force</a></b><small>www.stormywx.org | Florida flood map</small></div><span class="sp"></span><a class="back" href="index.html">Overview</a><a class="back" href="lookup.html">Flood lookup</a><a class="back" href="methods.html">Methods</a></header>
 <div class="note">Modeled estimates, not inspections. About 2,800 structures likely affected (range 730 to 4,500). River water 18 in or more: 508 buildings now, 937 at the NWS forecast crest (rain ponding and reported areas are not included). Updated Fri Nov 20, 2026, 10:41 PM ET. If you are in danger, call 911.</div>
 <div id="map"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -34,7 +35,7 @@ var lyrR = L.layerGroup(D.reports.map(function(r){return L.marker([r.lat, r.lon]
 L.control.layers(null, {'Modeled river water now': lyrN, 'Modeled river water at NWS forecast crest': lyrF, 'Rain ponding 1 ft+ (screening only)': lyrP, 'River gauges': lyrG, 'Reported flooding (areas)': lyrR, 'County lines': lyrC}, {collapsed: window.innerWidth < 700}).addTo(map);
 var lg = L.control({position: 'bottomleft'});
 lg.onAdd = function(){var d = L.DomUtil.create('div', 'lg'); d.innerHTML = '<h4>Legend (tap)</h4><div class="body">'
- + '<div><span class="sw" style="background:#b7d9f5"></span>River water 1 ft to under 18 in</div><div><span class="sw" style="background:#8cc3ee"></span>18 in to 3 ft</div><div><span class="sw" style="background:#4a97d6"></span>3-6 ft</div><div><span class="sw" style="background:#1f66b0"></span>6+ ft (incl. river and lakes)</div>'
+ + '<div><span class="sw" style="background:#d6ecfb"></span>River water under 1 ft (edge)</div><div><span class="sw" style="background:#b7d9f5"></span>1 ft to under 18 in</div><div><span class="sw" style="background:#8cc3ee"></span>18 in to 3 ft</div><div><span class="sw" style="background:#4a97d6"></span>3-6 ft</div><div><span class="sw" style="background:#1f66b0"></span>6-10 ft <span class="sw" style="background:#0b3b7a"></span>10+ ft (incl. river and lakes)</div>'
  + '<div><span class="sw" style="background:#009688"></span>Rain ponding 1 ft+ (screening)</div><div><span class="sw" style="background:#ff7f00;transform:rotate(45deg)"></span>Reported flooding (area)</div>'
  + '<div><span class="sw dot" style="background:#8e2bd9"></span>Gauge major <span class="sw dot" style="background:#e4002b"></span>moderate</div><div><span class="sw dot" style="background:#ff8c00"></span>minor <span class="sw dot" style="background:#2e9e44"></span>below <span class="sw dot" style="background:#7a8494"></span>no stages</div></div>';
  d.onclick = function(){d.classList.toggle('open');}; L.DomEvent.disableClickPropagation(d); return d;};

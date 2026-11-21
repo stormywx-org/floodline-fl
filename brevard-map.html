@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<!doctype html><html lang="en"><head><link rel="icon" href="brevard-swrf-logo.png"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Brevard County flood map | Stormy Weather Response Force</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
@@ -14,6 +14,7 @@ body{display:flex;flex-direction:column} #map{flex:1;min-height:300px}
 .lg h4{margin:0 0 6px;color:var(--navy);font-size:14px} .sw{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;border:1px solid #333}
 .sq{display:inline-block;width:14px;height:10px;margin-right:6px;vertical-align:0} .note{color:var(--muted);font-size:12px;margin-top:6px}
 .staffbar{background:#fff3cd;color:#5c4400;font-weight:700;text-align:center;padding:4px;font-size:14px}
+@media (max-width:700px){.leaflet-bottom.leaflet-left .lg{margin-bottom:34px}}
 </style></head><body>
 <header><img src="brevard-swrf-logo.png" alt="SWRF logo"><div><b>Brevard County flood map</b><small>Stormy Weather Response Force &middot; <a href="https://www.stormywx.org">www.stormywx.org</a> &middot; built Fri Nov 20, 2026, 9:17 PM ET</small></div><span class="sp"></span><a class="back" href="brevard-status.html">Status</a>&nbsp;&nbsp;<a class="back" href="brevard-index.html">Get help</a></header>
 <div id="map"></div>
@@ -66,8 +67,8 @@ lg.onAdd = function () { var d = L.DomUtil.create('div', 'lg'); d.innerHTML =
  '<h4 onclick="this.parentNode.classList.toggle(&quot;open&quot;)">Brevard County flooding <span style="font-weight:400;font-size:12px">(legend)</span></h4><div class="body">' +
  '<div><span class="sw" style="background:#8e2bd9"></span>Gauge: major flood</div><div><span class="sw" style="background:#e4002b"></span>moderate</div><div><span class="sw" style="background:#ff8c00"></span>minor</div><div><span class="sw" style="background:#f2c200"></span>action (near flood stage)</div><div><span class="sw" style="background:#7a8494"></span>no flood stages set / normal</div>' +
  '<div style="margin-top:4px"><span class="sq" style="border:2px solid #e4002b;background:rgba(228,0,43,.15)"></span>NWS Flood Warning</div><div><span class="sq" style="border:2px dashed #2e8b57"></span>NWS Flood Watch</div>' +
- '<div><span class="sq" style="background:#b7d9f5"></span>Modeled water, 1 ft to under 18 in</div><div><span class="sq" style="background:#8cc3ee"></span>18 in to 3 ft</div>' +
- '<div><span class="sq" style="background:#4a97d6"></span>3-6 ft</div><div><span class="sq" style="background:#1f66b0"></span>6+ ft (includes the river and lakes)</div>' +
+ '<div><span class="sq" style="background:#d6ecfb"></span>Modeled water, under 1 ft (edge)</div><div><span class="sq" style="background:#b7d9f5"></span>1 ft to under 18 in</div><div><span class="sq" style="background:#8cc3ee"></span>18 in to 3 ft</div>' +
+ '<div><span class="sq" style="background:#4a97d6"></span>3-6 ft</div><div><span class="sq" style="background:#1f66b0"></span>6-10 ft <span class="sq" style="background:#0b3b7a"></span>10+ ft (includes the river and lakes)</div>' +
  '<div style="margin-top:4px"><span style="display:inline-block;width:11px;height:11px;transform:rotate(45deg);background:#ff7f00;margin:0 8px 0 2px"></span>Reported flooding, rescues or evacuation (not modeled; rain-driven)</div>' +
  (D.buildings.length ? '<div style="margin-top:4px"><b>Buildings (staff)</b>: water at building <span class="sq" style="background:#fff3a0"></span>1 ft-18 in <span class="sq" style="background:#ffd92f"></span>18 in-3 <span class="sq" style="background:#fd8d3c"></span>3-6 <span class="sq" style="background:#e31a1c"></span>6-10 ft</div>' : '') +
  '<div class="note">River model covers the St. Johns through Brevard, from the Indian River County line to Lake Harney (full-corridor windows). About 103 buildings have 18 in or more of river water now (112 at the forecast crest). Rain-driven street flooding and the Indian River Lagoon are not modeled and are not in the 18-inch counts. Estimates, not inspections.</div></div>';
